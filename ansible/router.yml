@@ -1,0 +1,84 @@
+- hosts: all
+  order: sorted
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Install teamd
+      ansible.builtin.apt:
+        name: 
+          - teamd
+          - ethtool
+        cache_valid_time: 3600
+
+  #    - name: Enable Systemd-networkd
+  #      ansible.builtin.systemd:
+  #        name: systemd-networkd
+  #        state: started
+  #        enabled: yes
+
+    - name: Copy Teamd service file
+      ansible.builtin.copy:
+        src: teamd@.service
+        dest: /etc/systemd/system/
+
+    - name: Copy systemd-networkd team0 config file 
+      ansible.builtin.template:
+        src: team0.network.j2
+        dest: /etc/systemd/network/50-team0.network
+
+    - name: Copy teamd config file 
+      ansible.builtin.copy:
+        src: team0.conf
+        dest: /etc/teamd.d/
+
+    - name: Enable teamd service
+      ansible.builtin.systemd:
+        name: teamd@team0
+        state: started
+        enabled: yes
+
+    - name: Configuration VLAN on OfficeRouter
+      block:
+        - name: Set parameters for vlan 10
+          ansible.builtin.set_fact:
+            vlan_id: 10
+            vlan_ip: 1
+            vlan_dev: eth3
+            onemore_vlan: '1'
+
+        - name: Generate vlan.netdev file
+          ansible.builtin.template:
+            src: vlan.netdev.j2
+            dest: /etc/systemd/network/10-vlan{{vlan_id}}.netdev
+
+        - name: Generate vlan.network file
+          ansible.builtin.template:
+            src: vlan.network.j2
+            dest: /etc/systemd/network/10-vlan{{vlan_id}}.network
+
+        - name: Generate ethX.network file
+          ansible.builtin.template:
+            src: eth.network.j2
+            dest: /etc/systemd/network/10-{{vlan_dev}}.network
+
+        - name: Set parameters for vlan 10
+          ansible.builtin.set_fact:
+            vlan_id: 11
+
+        - name: Generate vlan.netdev file
+          ansible.builtin.template:
+            src: vlan.netdev.j2
+            dest: /etc/systemd/network/10-vlan{{vlan_id}}.netdev
+
+        - name: Generate vlan.network file
+          ansible.builtin.template:
+            src: vlan.network.j2
+            dest: /etc/systemd/network/10-vlan{{vlan_id}}.network
+      when: ansible_hostname == 'officeRouter'
+
+    - name: Enable Systemd-networkd
+      ansible.builtin.systemd:
+        name: systemd-networkd
+        state: restarted
+        enabled: yes

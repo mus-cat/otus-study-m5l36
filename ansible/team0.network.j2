@@ -1,0 +1,11 @@
+[Match]
+Name=team0
+
+[Network]
+{% if ansible_hostname == 'inetRouter' %}
+Address=192.168.255.1/30
+{% else %}
+Address=192.168.255.2/30
+{% endif %}
+ConfigureWithoutCarrier=yes
+

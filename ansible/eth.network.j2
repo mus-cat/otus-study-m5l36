@@ -1,0 +1,9 @@
+[Match]
+Name={{vlan_dev}}
+
+[Network]
+VLAN=vlan{{vlan_id}}
+{% if onemore_vlan == '1' %}
+{%- set add_vlan = (vlan_id | int) + 1 -%}
+VLAN=vlan{{add_vlan}}
+{%- endif -%}

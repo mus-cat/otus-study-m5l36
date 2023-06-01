@@ -1,0 +1,15 @@
+[Unit]
+Description=Team Daemon for %I
+Wants=network-pre.target
+Before=network-pre.target
+ConditionPathExists=/etc/teamd.d/%i.conf
+
+[Install]
+WantedBy=networking.service
+
+[Service]
+BusName=org.libteam.teamd.%i
+ExecStart=/usr/bin/teamd -D -o -t %i -f /etc/teamd.d/%i.conf
+ExecStop=/usr/bin/teamd -t %i -k
+Restart=on-failure
+RestartPreventExitStatus=1

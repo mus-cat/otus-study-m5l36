@@ -1,0 +1,8 @@
+[Match]
+Name=vlan{{vlan_id}}
+
+[Network]
+Address=10.0.{{vlan_id}}.{{vlan_ip}}/24
+{% if vlan_ip != '1' %}
+Gateway=10.0.{{vlan_id}}.1
+{% endif %}
