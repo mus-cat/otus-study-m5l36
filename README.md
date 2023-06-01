@@ -20,7 +20,7 @@
 - Агрегацию каналов (bonding\teaming) в Linux 
 
 Решил упростить схему сети до следующей, достаточной для демонстрации вышеуказанных возможностей:
-!["Схема разворачиваемой сети"](https://github.com/mus-cat/otus-study-m5l36/blob/master/Network.png)
+!["Схема разворачиваемой сети"](https://github.com/mus-cat/otus-study-m5l36/blob/master/pic/Network.png)
 
 ## Резальтат
 С помощью **vagrant** и **ansible** поднимается стенд в котором:
